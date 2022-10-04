@@ -47,14 +47,14 @@ gltfLoader.load('models/rock2.glb', function (gltf) {
     transformMesh()
 })
 
-gltfLoader.load(
-    '/models/rock2.glb',
-    (gltf) =>
-    {
-        gltf.scene.scale.set(0.25, 0.25, 0.25)
-        scene.add(gltf.scene)
-    }
-)
+// gltfLoader.load(
+//     '/models/rock2.glb',
+//     (gltf) =>
+//     {
+//         gltf.scene.scale.set(0.25, 0.25, 0.25)
+//         scene.add(gltf.scene)
+//     }
+// )
 
 /**
  * Lights
@@ -76,42 +76,36 @@ const vertices = []
 const temporaryPosition = new THREE.Vector3()
 
 //size
-const scaleArray = new Float32Array(300)
+const scaleArray = new Float32Array(400)
 
 //color
-// const colorArray = new Uint16Array(900)
+//const colorArray = new Uint16Array(900)
 const colorArray =  []
-const temporaryColor = new THREE.Vector3()
-//const temporaryColor = new THREE.Color()
+//const temporaryColor = new THREE.Vector3()
+const temporaryColor = new THREE.Color()
 
 //const notImportantArray = []
 const notImportant = new THREE.Vector3()
 
-console.log(colorArray)
+//console.log(colorArray)
 //pointsGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3))
 //console.log(vertices)
 
 //Function to transform the mesh to particles
 function transformMesh(){
     //Transform the mesh to particles
-    for (let i = 0; i < 300; i ++){
+    for (let i = 0; i < 400; i ++){
         sampler.sample(temporaryPosition, notImportant, temporaryColor)
         vertices.push(temporaryPosition.x, temporaryPosition.y, temporaryPosition.z)
-        //colorArray.push(temporaryColor.x/255, temporaryColor.y/255, temporaryColor.z/255)
-        var colorR = temporaryColor.r/255
-        var colorG = temporaryColor.g/255
-        var colorB = temporaryColor.b/255
+        //console.log(temporaryColor)
         //colorArray.push(temporaryColor)
-        colorArray.push(colorR, colorG, colorB)
-        scaleArray[i] = Math.random()
+        colorArray.push(temporaryColor.r/255/255, temporaryColor.g/255/255, temporaryColor.b/255/255)
 
-        // pointsMaterial.setAttribute('color', new THREE.Vector3(colorR, colorG, colorB))
-        //pointsGeometry.setAttribute('color', new THREE.Color(colorArray, 3))
-        //console.log(temporaryColor, temporaryPosition)
-    
+        scaleArray[i] = Math.random()  
 }
     //define all points positions from the array
     pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
+    // pointsGeometry.setAttribute('color', new THREE.Uint16BufferAttribute(colorArray, 3))
     pointsGeometry.setAttribute('color', new THREE.Float32BufferAttribute(colorArray, 3))
     pointsGeometry.setAttribute('aScale', new THREE.BufferAttribute(scaleArray, 1))
     // pointsGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3))
@@ -119,12 +113,13 @@ function transformMesh(){
 
     //define material of the points
     const pointsMaterial = new THREE.ShaderMaterial({
-        //depthWrite: false,
+        depthWrite: false,
         //blending: THREE.AdditiveBlending,
+        transparent: true,
         vertexColors: true,
         uniforms:{
             uTime: {value: 0},
-            uSize: { value: 30 * renderer.getPixelRatio()}
+            uSize: { value: 90 * Math.min(renderer.getPixelRatio(), 2)}
         },
         vertexShader: vertexShader,
         fragmentShader: fragmentShader,
